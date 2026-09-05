@@ -1,0 +1,27 @@
+from openastra import perceiver, coords
+from openastra.planner import StubPlanner
+from openastra.grounder import CenterGrounder
+from openastra.executor import click_px, type_text
+
+
+def run(task: str, max_steps: int = 20, dry_run: bool = True) -> dict:
+    planner = StubPlanner()
+    grounder = CenterGrounder()
+    history: list = []
+    log: list = []
+    for _ in range(max_steps):
+        png, w, h = perceiver.screenshot() if not dry_run else (b"\x89PNG\r\n\x1a\n", 1920, 1080)
+        intent = planner.plan(png, task, history)
+        if intent.get("action") == "done":
+            break
+        x1000, y1000 = grounder.ground(png, w, h, intent.get("target", task))
+        x, y = coords.denormalize(x1000, y1000, w, h)
+        if intent.get("action") == "type":
+            type_text(intent.get("text", ""), dry_run=dry_run)
+        else:
+            click_px(x, y, dry_run=dry_run)
+        history.append(intent)
+        log.append({"intent": intent, "x": x, "y": y})
+        if len(history) >= max_steps:
+            break
+    return {"steps": len(history), "log": log}
