@@ -1,5 +1,11 @@
 import ctypes
 
+try:
+    import pyautogui
+    pyautogui.FAILSAFE = True
+except ImportError:
+    pass
+
 
 def click_px(x: int, y: int, dry_run: bool = True) -> tuple[int, int]:
     if dry_run:
