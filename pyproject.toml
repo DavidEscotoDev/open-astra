@@ -2,7 +2,7 @@
 name = "openastra"
 version = "0.1.0"
 requires-python = ">=3.11"
-dependencies = ["mss", "pyautogui", "pytest"]
+dependencies = ["mss", "pyautogui", "pytest", "pillow"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

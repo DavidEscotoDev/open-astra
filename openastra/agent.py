@@ -1,11 +1,14 @@
 from openastra import perceiver, coords
-from openastra.planner import StubPlanner
+from openastra.planner import StubPlanner, OllamaPlanner
 from openastra.grounder import CenterGrounder
 from openastra.executor import click_px, type_text
 
 
-def run(task: str, max_steps: int = 20, dry_run: bool = True) -> dict:
-    planner = StubPlanner()
+def run(task: str, max_steps: int = 20, dry_run: bool = True, planner=None, model: str = "qwen2.5vl:3b") -> dict:
+    if planner is None:
+        planner = StubPlanner()
+    elif isinstance(planner, str):
+        planner = OllamaPlanner(model=model) if planner == "ollama" else StubPlanner()
     grounder = CenterGrounder()
     history: list = []
     log: list = []
