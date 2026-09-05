@@ -1,19 +1,22 @@
 from openastra import perceiver, coords
 from openastra.planner import StubPlanner, OllamaPlanner
-from openastra.grounder import CenterGrounder
+from openastra.grounder import CenterGrounder, OllamaGrounder
 from openastra.executor import click_px, type_text
 
 
-def run(task: str, max_steps: int = 20, dry_run: bool = True, planner=None, model: str = "qwen2.5vl:3b") -> dict:
+def run(task: str, max_steps: int = 20, dry_run: bool = True, planner=None, grounder=None, model: str = "qwen2.5vl:3b") -> dict:
     if planner is None:
         planner = StubPlanner()
     elif isinstance(planner, str):
         planner = OllamaPlanner(model=model) if planner == "ollama" else StubPlanner()
-    grounder = CenterGrounder()
+    if grounder is None:
+        grounder = CenterGrounder()
+    elif isinstance(grounder, str):
+        grounder = OllamaGrounder(model=model) if grounder == "ollama" else CenterGrounder()
     history: list = []
     log: list = []
     for _ in range(max_steps):
-        png, w, h = perceiver.screenshot() if not dry_run else (b"\x89PNG\r\n\x1a\n", 1920, 1080)
+        png, w, h = perceiver.screenshot()
         intent = planner.plan(png, task, history)
         if intent.get("action") == "done":
             break
