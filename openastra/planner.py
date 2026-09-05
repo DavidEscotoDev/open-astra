@@ -22,7 +22,7 @@ class OllamaPlanner:
         b64 = base64.b64encode(buf.getvalue()).decode()
         payload = json.dumps({
             "model": self.model, "stream": False,
-            "prompt": f"Look at this screenshot. Task: {task}. History: {history}. Reply with ONLY this JSON, no other text: {{\"action\": \"click|type|done\", \"target\": \"...\", \"text\": \"...\"}}",
+            "prompt": f"Look at this screenshot. Task: {task}. History: {history}. Reply with ONLY this JSON, no other text: {{\"action\": \"click|type|press|hotkey|done\", \"target\": \"...\", \"text\": \"...\"}}. Use hotkey with text like win, press with text like enter, type with text to type.",
             "images": [b64]}).encode()
         req = urllib.request.Request("http://localhost:11434/api/generate", data=payload, headers={"Content-Type": "application/json"})
         with urllib.request.urlopen(req, timeout=180) as r:

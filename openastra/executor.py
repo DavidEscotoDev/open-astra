@@ -23,3 +23,21 @@ def type_text(text: str, dry_run: bool = True) -> str:
     pyautogui.FAILSAFE = True
     pyautogui.typewrite(text)
     return text
+
+
+def press(key: str, dry_run: bool = True) -> str:
+    if dry_run:
+        return key
+    import pyautogui
+    pyautogui.FAILSAFE = True
+    pyautogui.press(key)
+    return key
+
+
+def hotkey(*keys: str, dry_run: bool = True) -> tuple[str, ...]:
+    if dry_run:
+        return tuple(keys)
+    import pyautogui
+    pyautogui.FAILSAFE = True
+    pyautogui.hotkey(*keys)
+    return tuple(keys)

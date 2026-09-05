@@ -29,7 +29,12 @@ class OllamaGrounder:
         content = data["response"].strip()
         mx = re.search(r'"?x"?\s*:\s*(\d+)', content)
         my = re.search(r'"?y"?\s*:\s*(\d+)', content)
-        if not mx or not my:
-            raise ValueError(f"no coordinates in model output: {content[:200]}")
-        return (max(0, min(1000, int(mx.group(1)))), max(0, min(1000, int(my.group(1)))))
+        if mx and my:
+            x, y = int(mx.group(1)), int(my.group(1))
+        else:
+            nums = re.findall(r'\d+', content[content.index("{"):])
+            if len(nums) < 2:
+                raise ValueError(f"no coordinates in model output: {content[:200]}")
+            x, y = int(nums[0]), int(nums[1])
+        return (max(0, min(1000, x)), max(0, min(1000, y)))
 # ponytail: VLM guess, swap with OS-Atlas-7B local when accuracy matters
